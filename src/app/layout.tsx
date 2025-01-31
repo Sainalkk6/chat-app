@@ -1,9 +1,13 @@
+import { AuthProvider } from "@/providers/AuthContextProvider";
+import QueryProvider from "@/providers/QueryProvider";
+import { ReceiverContextProvider } from "@/providers/ReceiverContextProvider";
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Albert_Sans, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { SocketProvider } from "@/providers/SocketProvider";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const albertSans = Albert_Sans({
+  variable: "--font-albert",
   subsets: ["latin"],
 });
 
@@ -24,11 +28,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
-      </body>
+      <AuthProvider>
+        <ReceiverContextProvider>
+          <QueryProvider>
+            <SocketProvider>
+              <body className={`${albertSans.variable} ${geistMono.variable} antialiased`}>{children}</body>
+            </SocketProvider>
+          </QueryProvider>
+        </ReceiverContextProvider>
+      </AuthProvider>
     </html>
   );
 }
