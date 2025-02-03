@@ -6,7 +6,8 @@ import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import Button from "../Button";
 import TextField from "../TextField";
-import { useAuth } from "@/providers/AuthContextProvider";
+import { httpClient } from "@/lib/client";
+import { Endpoints } from "@/utils/enpoints";
 
 interface PersonalForm {
   uid: string;
@@ -25,19 +26,17 @@ const PersonalForm = ({ uid, email, photoUrl }: PersonalForm) => {
       imageUrl: "",
     },
     onSubmit: async (values) => {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/users/update-user/${uid}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          displayName: values.username,
-          phoneNumber: values.phone,
-          photoURL: values.imageUrl ?? photoUrl,
-          email: values.email,
-          uid,
-        }),
-      });
+      const userData = {
+        displayName: values.username,
+        phoneNumber: values.phone,
+        photoURL: values.imageUrl ?? photoUrl,
+        email: values.email,
+        uid,
+      };
+      const client = await httpClient();
+      const uploadUserDetails = await client.put(Endpoints.uploadUserDetails(uid), userData);
 
-      if (response.ok) {
+      if (uploadUserDetails.status === 200) {
         router.push("/");
         Cookies.set("user", JSON.stringify({ username: values.username, email: values.email, avatar: values.imageUrl }), { expires: 1, path: "/", sameSite: "Lax" });
       }

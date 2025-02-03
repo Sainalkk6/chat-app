@@ -1,3 +1,4 @@
+import { renderUserAvatar } from "@/utils/renderUserAvatar";
 import { RefObject } from "react";
 
 export interface MessageInterface {
@@ -12,7 +13,7 @@ const Message = ({ userType, timeStamp, username, profileImage, message }: Messa
   const userDetails = () => {
     return (
       <div className={`flex ${userType === "sender" ? "flex-row" : "flex-row-reverse"} flex items-center gap-6`}>
-        <img src={profileImage} alt="user-avatar" className="rounded-full w-[50px] h-[50px] object-cover" />
+        {renderUserAvatar(profileImage)}
         <div className="flex items-center gap-4">
           <span className="text-text-dark text-2xl font-medium">{username}</span>
           <div className="w-1 h-1 bg-black" />

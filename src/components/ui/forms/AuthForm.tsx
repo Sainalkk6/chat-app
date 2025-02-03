@@ -1,6 +1,5 @@
 "use client";
 
-import Cookies from "js-cookie";
 import { useAuth } from "@/providers/AuthContextProvider";
 import { loginSchema } from "@/schema/login.schema";
 import { signupSchema } from "@/schema/signup.schema";
@@ -9,6 +8,7 @@ import { FirebaseError } from "firebase/app";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { useFormik } from "formik";
+import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Button from "../Button";
@@ -56,9 +56,6 @@ const FormContainer = ({ buttonLabel, isLogin, subtitle, title, subtitleLink }: 
   const handleSignIn = async (email: string, password: string) => {
     try {
       const response = await signInWithEmailAndPassword(auth, email, password);
-      await setDoc(doc(db, "users", email), {
-        isOnline: true,
-      });
       setError("");
       return response;
     } catch (error) {
@@ -69,6 +66,7 @@ const FormContainer = ({ buttonLabel, isLogin, subtitle, title, subtitleLink }: 
   const { touched, handleBlur, errors, handleChange, handleSubmit, values } = useFormik({
     initialValues,
     onSubmit: async (values) => {
+      Cookies.set("auth", `${process.env.NEXT_PUBLIC_CUSTOM_COOKIE}`);
       try {
         const response = isLogin ? await handleSignIn(values.email, values.password) : await handleSignUp(values.email, values.password);
         if (response) {
@@ -85,6 +83,7 @@ const FormContainer = ({ buttonLabel, isLogin, subtitle, title, subtitleLink }: 
     try {
       if (signIn) {
         await signIn();
+        Cookies.set("auth", `${process.env.NEXT_PUBLIC_CUSTOM_COOKIE}`);
         isLogin ? router.push("/") : router.push("/profile");
       }
     } catch (error: any) {

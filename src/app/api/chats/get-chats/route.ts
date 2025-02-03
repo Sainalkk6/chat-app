@@ -6,8 +6,8 @@ export const GET = async (req: NextRequest) => {
     try {
         const url = new URL(req.url);
         const searchParams = url.searchParams;
-        const senderId = searchParams.get("senderId");
-        const receiverId = searchParams.get("receiverId");
+        const senderId = decodeURIComponent(searchParams.get("senderId") || "");
+        const receiverId = decodeURIComponent(searchParams.get("receiverId") || "");
         await connect();
         const chatRoom = await Chatroom.findOne({
             participants: {

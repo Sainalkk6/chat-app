@@ -1,5 +1,8 @@
 "use client";
+
+import { httpClient } from "@/lib/client";
 import { useAuth } from "@/providers/AuthContextProvider";
+import { Endpoints } from "@/utils/enpoints";
 import { renderUserAvatar } from "@/utils/renderUserAvatar";
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
@@ -19,14 +22,15 @@ const ProfileStrip = () => {
   useEffect(() => {
     if (user && user.providerData) {
       const getData = async () => {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/users/get-user/${user.uid}`);
-        const data = await response.json();
+        const client = await httpClient();
+        const getUser = await client.get(Endpoints.getUser(user.uid));
+        const data = getUser.data;
         const userInfo = { displayName: data.displayName, email: data.email, phoneNumber: data.phoneNumber, photoURL: data.photoURL, uid: data.uid };
         setUserData(userInfo);
         Cookies.set("user", JSON.stringify(userInfo));
       };
       getData();
-    }
+    }fetch
   }, [user]);
 
   if (!user || userData == undefined) return <span>Loading...</span>;

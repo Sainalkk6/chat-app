@@ -1,10 +1,12 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import Switcher from "./Switcher";
-import Header from "./Header";
-import UserCard from "./UserCard";
+import { httpClient } from "@/lib/client";
 import { useAuth } from "@/providers/AuthContextProvider";
+import { useEffect, useState } from "react";
+import Header from "./Header";
+import Switcher from "./Switcher";
+import UserCard from "./UserCard";
+import { Endpoints } from "@/utils/enpoints";
 
 type UserType = {
   email: string;
@@ -13,6 +15,8 @@ type UserType = {
   photoURL: string;
   uid: string;
   displayName: string;
+  lastMessage: string;
+  timestamp: string;
 };
 
 const Users = () => {
@@ -23,10 +27,10 @@ const Users = () => {
   useEffect(() => {
     if (user) {
       const getOtherUsers = async () => {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}api/users/get-users`);
-        const data = await response.json();
-        const filteredUserList = data.filter((item: UserType) => item.uid !== user.uid && item.uid);
-        setUsers(filteredUserList);
+        const client = await httpClient();
+        const getUsers = await client.get(Endpoints.getUsers(user.uid));
+        const data = getUsers.data;
+        setUsers(data);
       };
       getOtherUsers();
     }
@@ -40,7 +44,7 @@ const Users = () => {
       <Header />
       <div className="flex flex-col">
         {users.map((user) => (
-          <UserCard userId= {user.uid} photoUrl={user.photoURL} username={user.displayName} time="" key={user.uid} />
+          <UserCard userId={user.uid} photoUrl={user.photoURL} username={user.displayName} timestamp={user.timestamp} lastMessage={user.lastMessage} key={user.uid} />
         ))}
       </div>
     </div>

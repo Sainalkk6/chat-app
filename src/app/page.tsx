@@ -4,7 +4,7 @@ import React from "react";
 
 const Home = () => {
   return (
-    <div className="flex w-full p-5 gap-6 bg-[#f9f8fd] min-h-screen">
+    <div className="flex w-full gap-6 bg-[#f9f8fd] min-h-screen">
       <Aside />
       <Chatroom />
     </div>

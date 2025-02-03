@@ -29,9 +29,9 @@ export const PUT = async (req: NextRequest, { params }: any) => {
         const firstLetter = data.displayName?.charAt(0).toUpperCase() || "@";
 
         const svg = `
-        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
-            <rect width="100" height="100" fill="${randomColor}" rx="20"/>
-            <text x="50%" y="55%" text-anchor="middle" font-size="50" fill="#FFF" font-family="Arial" dy=".3em">${firstLetter}</text>
+        <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="48" fill="${randomColor}" />
+            <text x="50%" y="50%" text-anchor="middle" font-size="45" font-weight="bold" fill="#FFF" font-family="Arial, sans-serif" dy=".3em">${firstLetter}</text>
         </svg>
     `;
 

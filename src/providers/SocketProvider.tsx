@@ -8,10 +8,8 @@ export const SocketProvider: React.FC<React.PropsWithChildren> = ({ children }) 
   const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
-    const newSocket = io("http://localhost:1100");
-    newSocket.on("connect", () => {
-      console.log("Socket connected:", newSocket.id);
-    });
+    const newSocket = io(`${process.env.NEXT_PUBLIC_SOCKET_PORT}`, { transports: ["websocket"] });
+    newSocket.on("connect", () => {});
 
     // Handle connection errors
     newSocket.on("connect_error", (err) => {

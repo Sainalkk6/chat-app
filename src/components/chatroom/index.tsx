@@ -1,11 +1,12 @@
 "use client";
+import { httpClient } from "@/lib/client";
 import { useReceiverContext } from "@/providers/ReceiverContextProvider";
+import { useSocket } from "@/providers/SocketProvider";
+import { Endpoints } from "@/utils/enpoints";
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
-import { io } from "socket.io-client";
 import MessageContainer from "./sub-components/MessageContainer";
 import ReceiverStrip from "./sub-components/receiverStrip";
-import { useSocket } from "@/providers/SocketProvider";
 
 // export type UserData = {
 //   username: string | null;
@@ -42,6 +43,7 @@ const Chatroom = () => {
   const socket = useSocket();
   const { receiverUid } = useReceiverContext();
   const [messages, setMessages] = useState<ChatType>({} as ChatType);
+  const [typing, setTyping] = useState<{senderId:string, typing:boolean}>({} as any);
   const [recieverData, setRecieverData] = useState<UserData>({} as UserData);
   const [senderData, setSenderData] = useState<UserData>({} as UserData);
   const [id, setId] = useState<number>();
@@ -49,9 +51,12 @@ const Chatroom = () => {
   useEffect(() => {
     //get the current receiver's details
     const getUser = async () => {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/users/get-user/${receiverUid}`);
-      const data = await response.json();
-      setRecieverData(data);
+      if (receiverUid) {
+        const client = await httpClient();
+        const getUser = await client.get(Endpoints.getUser(receiverUid));
+        const data = getUser.data;
+        setRecieverData(data);
+      }
     };
 
     //get the chat with the current user
@@ -65,12 +70,16 @@ const Chatroom = () => {
 
     const getChat = async () => {
       setSenderData(user);
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/chats/get-chats?senderid=${user.uid}&receiverId=${receiverUid}`);
-      const data: ChatType = await response.json();
-      const roomId = data && data.roomId ? data.roomId : Number(numbers);
-      socket!.emit("join_room", roomId);
-      setMessages(data);
+      if (user && receiverUid) {
+        const client = await httpClient();
+        const getUserConversations = await client.get(Endpoints.getUserConversations(user.uid, receiverUid));
+        const data: ChatType = getUserConversations.data;
+        const roomId = data && data.roomId ? data.roomId : Number(numbers);
+        socket!.emit("join_room", roomId);
+        setMessages(data);
+      }
     };
+
     if (!socket) return;
 
     socket!.emit("join_room", Number(numbers));
@@ -79,12 +88,14 @@ const Chatroom = () => {
     getUser();
   }, [receiverUid]);
 
+  const handleTypingStatus = (status: boolean, senderId:string) => setTyping({senderId, typing:status});
+
   if (!recieverData) return <span>Loading...</span>;
 
   return (
-    <div className="flex w-full bg-default flex-col gap-7">
-      {recieverData.photoURL && <ReceiverStrip isOnline={recieverData.isOnline} photoUrl={recieverData?.photoURL} username={recieverData?.displayName || ""} />}
-      <div className="flex overflow-auto no-scrollbar flex-1 flex-col">{receiverUid && id ? <MessageContainer id={id} socket={socket} setMessages={setMessages} sender={senderData} receiver={recieverData} messages={messages} /> : <div></div>}</div>
+    <div className="flex w-full bg-default flex-col rounded-2xl">
+      {recieverData.photoURL && <ReceiverStrip receiverId={receiverUid} senderId={senderData.uid!} typing = {typing} isOnline={recieverData.isOnline} photoUrl={recieverData?.photoURL} username={recieverData?.displayName || ""} />}
+      <div className="flex overflow-auto no-scrollbar flex-1 flex-col">{receiverUid && id ? <MessageContainer typing={typing.typing} handleTypingStatus={handleTypingStatus} id={id} socket={socket} setMessages={setMessages} sender={senderData} receiver={recieverData} messages={messages} /> : <div></div>}</div>
     </div>
   );
 };
