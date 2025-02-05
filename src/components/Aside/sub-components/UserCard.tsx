@@ -1,6 +1,6 @@
 "use client";
+import { renderUserAvatar } from "@/components/ui/renderUserAvatar";
 import { useReceiverContext } from "@/providers/ReceiverContextProvider";
-import { renderUserAvatar } from "@/utils/renderUserAvatar";
 import dayjs from "dayjs";
 
 interface UserCard {
@@ -18,7 +18,7 @@ const UserCard = ({ photoUrl, username, timestamp, userId, lastMessage }: UserCa
   const renderUserInfo = () => {
     return (
       <div className="flex flex-col justify-center">
-        <span className="text-text-dark cursor-default capitalize text-[22px] font-medium">{username}</span>
+        <span className="text-text-dark capitalize text-[22px] font-medium">{username}</span>
         <span className="text-field-label font-medium">{lastMessage || "No messages yet"}</span>
       </div>
     );
@@ -30,7 +30,8 @@ const UserCard = ({ photoUrl, username, timestamp, userId, lastMessage }: UserCa
         {renderUserAvatar(photoUrl)}
         {renderUserInfo()}
       </div>
-      <div className="flex flex-col text-nowrap">        <span className="text-field-label text-lg">{formattedTime}</span>
+      <div className="flex flex-col text-nowrap">
+        <span className="text-field-label text-lg">{formattedTime}</span>
       </div>
     </div>
   );

@@ -1,5 +1,4 @@
-import { renderUserAvatar } from "@/utils/renderUserAvatar";
-import { RefObject } from "react";
+import { renderUserAvatar } from "@/components/ui/renderUserAvatar";
 
 export interface MessageInterface {
   userType: "sender" | "receiver";

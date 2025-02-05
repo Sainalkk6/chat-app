@@ -1,9 +1,9 @@
 "use client";
 
+import { renderUserAvatar } from "@/components/ui/renderUserAvatar";
 import { httpClient } from "@/lib/client";
 import { useAuth } from "@/providers/AuthContextProvider";
 import { Endpoints } from "@/utils/enpoints";
-import { renderUserAvatar } from "@/utils/renderUserAvatar";
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 

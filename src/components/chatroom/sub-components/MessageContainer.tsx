@@ -128,7 +128,7 @@ const MessageContainer = ({ messages, receiver, sender, socket, setMessages, id,
 
   return (
     <div className="flex flex-col">
-      <div className="overflow-y-auto lg:h-[860px] xl:h-[800px] no-scrollbar" ref={messageContainerRef}>
+      <div className="overflow-y-auto 2xl:h-[77.5vh] no-scrollbar" ref={messageContainerRef}>
         {renderMessages()}
       </div>
       <div className="flex w-full gap-2 items-center p-4 rounded-3xl">

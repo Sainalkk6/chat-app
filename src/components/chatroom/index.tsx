@@ -39,11 +39,17 @@ export type ChatType = {
   participants: [string, string];
 };
 
+export type statusType = {
+  senderId: string;
+  status: boolean;
+};
+
 const Chatroom = () => {
   const socket = useSocket();
   const { receiverUid } = useReceiverContext();
   const [messages, setMessages] = useState<ChatType>({} as ChatType);
-  const [typing, setTyping] = useState<{senderId:string, typing:boolean}>({} as any);
+  const [typing, setTyping] = useState({} as statusType);
+  const [isOnline, setIsOnline] = useState({} as statusType);
   const [recieverData, setRecieverData] = useState<UserData>({} as UserData);
   const [senderData, setSenderData] = useState<UserData>({} as UserData);
   const [id, setId] = useState<number>();
@@ -88,18 +94,16 @@ const Chatroom = () => {
     getUser();
   }, [receiverUid]);
 
-  const handleTypingStatus = (status: boolean, senderId:string) => setTyping({senderId, typing:status});
+  const handleTypingStatus = (status: boolean, senderId: string) => setTyping({ senderId, status });
 
   if (!recieverData) return <span>Loading...</span>;
 
   return (
     <div className="flex w-full bg-default flex-col rounded-2xl">
-      {recieverData.photoURL && <ReceiverStrip receiverId={receiverUid} senderId={senderData.uid!} typing = {typing} isOnline={recieverData.isOnline} photoUrl={recieverData?.photoURL} username={recieverData?.displayName || ""} />}
-      <div className="flex overflow-auto no-scrollbar flex-1 flex-col">{receiverUid && id ? <MessageContainer typing={typing.typing} handleTypingStatus={handleTypingStatus} id={id} socket={socket} setMessages={setMessages} sender={senderData} receiver={recieverData} messages={messages} /> : <div></div>}</div>
+      {recieverData.photoURL && <ReceiverStrip receiverId={receiverUid} senderId={senderData.uid!} typing={typing} isOnline={recieverData.isOnline} photoUrl={recieverData?.photoURL} username={recieverData?.displayName || ""} />}
+      <div className="flex overflow-auto no-scrollbar flex-1 flex-col">{receiverUid && id ? <MessageContainer typing={typing.status} handleTypingStatus={handleTypingStatus} id={id} socket={socket} setMessages={setMessages} sender={senderData} receiver={recieverData} messages={messages} /> : <div></div>}</div>
     </div>
   );
 };
 
 export default Chatroom;
-
-///Change the type of user and receiver to be the same

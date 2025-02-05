@@ -1,10 +1,11 @@
-import { renderUserAvatar } from "@/utils/renderUserAvatar";
+import { renderUserAvatar } from "@/components/ui/renderUserAvatar";
+import { statusType } from "..";
 
 interface RecieverStripInterface {
   photoUrl: string;
   username: string;
   isOnline?: boolean;
-  typing: { senderId: string; typing: boolean };
+  typing: statusType;
   receiverId: string;
   senderId: string;
 }
@@ -15,7 +16,7 @@ const ReceiverStrip = ({ photoUrl, username, isOnline, typing, receiverId, sende
       {renderUserAvatar(photoUrl)}
       <div className="flex flex-col">
         <span className="text-xl font-medium">{username}</span>
-        {receiverId !== typing.senderId && typing.typing ? <span className="text-green-600 text-lg">Typing...</span> : <span className="text-white text-lg">``</span>}
+        {receiverId !== typing.senderId && typing.status ? <span className="text-green-600 text-lg">Typing...</span> : <span className="text-white text-lg">``</span>}
       </div>
     </div>
   );
